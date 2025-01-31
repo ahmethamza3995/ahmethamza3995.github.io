@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            overflow: hidden; /* Slider'ı engellemek için */
+        }
+
+        .game-container {
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            width: 600px;  /* Canvas boyutunu artırıyoruz */
+            height: 600px; /* Canvas boyutunu artırıyoruz */
+        }
+
+        .score-display {
+            font-size: 24px;
+            color: white;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #333;
+            border-radius: 10px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="score-display">Score: <span id="scoreElement">0</span></div>
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div class="controls">
+            <p>Use arrow keys to control the snake</p>
+            <a href="index.html" class="back-button">Back to Games</a>
+        </div>
+    </div>
+    <script src="scripts/snake.js"></script>
+</body>
+</html>
