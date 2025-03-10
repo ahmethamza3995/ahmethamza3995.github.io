@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Python Interpreter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --primary-light: #93C5FD;
+            --accent: #8B5CF6;
+            --background: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --header-height: 80px;
+            --success: #4CAF50;
+            --success-dark: #45a049;
+            --error: #f44336;
+            --error-dark: #d32f2f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--card-bg);
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .header-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            left: 10%;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 40%;
+            right: 20%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #FFFFFF, #E0E7FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        #editor {
+            width: 100%;
+            height: 300px;
+            font-family: monospace;
+            font-size: 16px;
+            border: 1px solid var(--text-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            box-sizing: border-box;
+            resize: vertical;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm) inset;
+        }
+
+        .output-container {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        #output {
+            width: 100%;
+            min-height: 200px;
+            font-family: monospace;
+            font-size: 16px;
+            border: 1px solid var(--text-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            box-sizing: border-box;
+            background-color: var(--background);
+            color: var(--text-primary);
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        #run-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        #run-btn:hover {
+            background-color: var(--success-dark);
+        }
+
+        #clear-btn {
+            background-color: var(--error);
+            color: white;
+        }
+
+        #clear-btn:hover {
+            background-color: var(--error-dark);
+        }
+
+        .loader {
+            display: none;
+            border: 4px solid var(--text-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            text-align: center;
+            display: none;
+            margin: 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        .example {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .example pre {
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            background-color: var(--background);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--text-light);
+            overflow-x: auto;
+        }
+
+        .error {
+            color: var(--error);
+            font-weight: bold;
+        }
+
+        .success {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--card-bg);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-text {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 2.5rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 1.5rem 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 2rem 1rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .container {
+                padding: 0 1rem 1.5rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="header-content">
+            <h1>Web Python Interpreter</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="editor-container">
+            <h2 class="section-title">Python Code:</h2>
+            <textarea id="editor" placeholder="Write your Python code here...">
+                # Example: Factorial calculation function
+                def factorial(n):
+                    if n == 0 or n == 1:
+                        return 1
+                    else:
+                        return n * factorial(n-1)
+
+                # Factorial of numbers from 1 to 10
+                for i in range(1, 11):
+                    print(f"{i}! = {factorial(i)}")
+</textarea>
+            <div class="button-container">
+                <button id="run-btn" class="btn">Run Code</button>
+                <button id="clear-btn" class="btn">Clear Code</button>
+            </div>
+            <div id="loader" class="loader"></div>
+            <div id="loading-text" class="loading-text">Loading Python... This may take a few seconds.</div>
+        </div>
+        
+        <div class="output-container">
+            <h2 class="section-title">Output:</h2>
+            <div id="output"></div>
+        </div>
+        
+        <div class="example">
+            <h2 class="section-title">Example Codes:</h2>
+            <p><strong>Example 1: List operations</strong></p>
+            <pre>
+# Creating a list and operations
+numbers = [10, 20, 30, 40, 50]
+print("List:", numbers)
+print("Length of list:", len(numbers))
+print("Sum of list:", sum(numbers))
+print("Maximum value:", max(numbers))
+print("Minimum value:", min(numbers))
+
+# Loop through the list
+print("\nList elements:")
+for i, number in enumerate(numbers):
+    print(f"numbers[{i}] = {number}")
+</pre>
+            <p><strong>Example 2: Plotting with Matplotlib</strong></p>
+            <pre>
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create data
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+# Create plot
+plt.figure(figsize=(8, 4))
+plt.plot(x, y, 'r-', label='sin(x)')
+plt.title('Sine Graph')
+plt.xlabel('x')
+plt.ylabel('sin(x)')
+plt.grid(True)
+plt.legend()
+
+# Note: With Pyodide HTML5 canvas backend
+# the plt.show() command is unnecessary and displayed automatically
+</pre>
+        </div>
+    </div>
+
+    <footer>
+        <p class="footer-text">© 2025 Web Code Interpreters | Empowering developers with modern learning tools</p>
+    </footer>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js"></script>
+    <script>
+        const runButton = document.getElementById('run-btn');
+        const clearButton = document.getElementById('clear-btn');
+        const outputDiv = document.getElementById('output');
+        const editorTextarea = document.getElementById('editor');
+        const loader = document.getElementById('loader');
+        const loadingText = document.getElementById('loading-text');
+        
+        let pyodide;
+        const CODE_TIMEOUT = 10000; // 10 second timeout
+        
+        async function main() {
+            runButton.disabled = true;
+            loader.style.display = 'block';
+            loadingText.style.display = 'block';
+            outputDiv.textContent = 'Loading Python interpreter, please wait...';
+            
+            try {
+                pyodide = await loadPyodide();
+                await pyodide.loadPackagesFromImports(`
+                import numpy as np
+                import matplotlib
+                matplotlib.use('module://matplotlib.backends.html5_canvas_backend')
+                import matplotlib.pyplot as plt
+                plt.ion()  # Enable interactive mode
+                `)
+                outputDiv.textContent = 'Python interpreter is ready! Write your code and click "Run Code" button.';
+                runButton.disabled = false;
+            } catch (error) {
+                outputDiv.textContent = `Error: Could not load Python interpreter. ${error.message}`;
+            } finally {
+                loader.style.display = 'none';
+                loadingText.style.display = 'none';
+            }
+        }
+        
+        async function runPython() {
+            if (!pyodide) {
+                outputDiv.textContent = 'Python interpreter has not been loaded yet.';
+                return;
+            }
+            
+            const code = editorTextarea.value;
+            outputDiv.textContent = 'Running...';
+            runButton.disabled = true;
+            loader.style.display = 'block';
+            
+            try {
+                // Create timeout promise
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout: Your code ran for too long.')), CODE_TIMEOUT);
+                });
+                
+                const codeExecution = (async () => {
+                    // First define the helper class to capture standard output
+                    pyodide.runPython(`
+                        import sys
+                        from io import StringIO
+                        
+                        class PyodideOutput:
+                            def __init__(self):
+                               stdout
+                                return self
+                                
+                            def __exit__(self, exc_type, exc_val, exc_tb):
+                                sys.stdout = self.o self.stdout = StringIO()
+                                self.old_stdout = sys.stdout
+                                
+                            def __enter__(self):
+                                sys.stdout = self.ld_stdout
+                                
+                            def get_output(self):
+                                return self.stdout.getvalue()
+                                
+                        # Configure HTML output for Matplotlib
+                        try:
+                            import matplotlib.pyplot as plt
+                            plt.rcParams['figure.figsize'] = [8, 5]
+                            plt.rcParams['figure.dpi'] = 100
+                        except:
+                            pass
+                    `);
+                    
+                    // Now run the user code independently
+                    let result = '';
+                    
+                    // Set up output capture
+                    pyodide.runPython(`_output_capture = PyodideOutput(); _output_capture.__enter__()`);
+                    
+                    try {
+                        // Run user code directly
+                        await pyodide.runPythonAsync(code);
+                    } catch (error) {
+                        // Properly format and display JavaScript-caught errors
+                        console.error("Python code execution error:", error);
+                        pyodide.runPython(`
+                            error_msg = """${error.toString().replace(/"/g, '\\"')}"""
+                            print(f"<span class='error'>Error: {error_msg}</span>")
+                        `);
+                    } finally {
+                        // Get captured output and clean up
+                        result = pyodide.runPython(`
+                            result = _output_capture.get_output()
+                            _output_capture.__exit__(None, None, None)
+                            result
+                        `);
+                    }
+                    
+                    outputDiv.innerHTML = result;
+                    
+                    // Add matplotlib graphs
+                    try {
+                        const figures = pyodide.runPython(`
+                            try:
+                                import matplotlib.pyplot as plt
+                                plt.close('all')  # Clear previous figures
+                                "Graphs successfully created"
+                            except Exception as e:
+                                f"Graph creation error: {str(e)}"
+                        `);
+                        
+                        if (figures.includes("Graphs successfully created")) {
+                            // If successful, add a message to the output
+                            if (result) {
+                                outputDiv.innerHTML += "<div class='success'><br>[Graphs successfully created.]</div>";
+                            }
+                        }
+                    } catch (error) {
+                        console.log("Graph creation error:", error);
+                    }
+                    
+                    return result;
+                })();
+                
+                // Race timeout and code execution - whichever finishes first
+                await Promise.race([timeoutPromise, codeExecution]);
+                
+            } catch (error) {
+                outputDiv.innerHTML = `<span class='error'>Execution error: ${error.message}</span>`;
+            } finally {
+                runButton.disabled = false;
+                loader.style.display = 'none';
+            }
+        }
+        
+        function clearAll() {
+            editorTextarea.value = '';
+            outputDiv.textContent = '';
+        }
+        
+        runButton.addEventListener('click', runPython);
+        clearButton.addEventListener('click', clearAll);
+        
+        // Initialize Python when the page loads
+        window.addEventListener('load', main);
+    </script>
+</body>
+</html>

@@ -3,36 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Games</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Code Interpreters</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --primary-light: #93C5FD;
+            --accent: #8B5CF6;
+            --background: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --header-height: 80px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--card-bg);
+            padding: 5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .site-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #FFFFFF, #E0E7FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .site-description {
+            font-size: 1.25rem;
+            font-weight: 400;
+            max-width: 800px;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .header-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            left: 10%;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 40%;
+            right: 20%;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: -3rem auto 3rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 3;
+        }
+        
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        
+        .interpreters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .interpreter-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .interpreter-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-header {
+            position: relative;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--card-bg);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            color: var(--card-bg);
+            background: rgba(255, 255, 255, 0.2);
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            text-align: center;
+        }
+        
+        .card-title {
+            color: var(--card-bg);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .card-body {
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+        
+        .card-description {
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .card-link {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--card-bg);
+            padding: 0.875rem 1.75rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .card-link:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--card-bg);
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-text {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        @media (max-width: 768px) {
+            .site-title {
+                font-size: 2.5rem;
+            }
+            
+            .site-description {
+                font-size: 1.125rem;
+            }
+            
+            header {
+                padding: 4rem 1.5rem;
+            }
+            
+            main {
+                margin-top: -2rem;
+                padding: 0 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .site-title {
+                font-size: 2rem;
+            }
+            
+            header {
+                padding: 3rem 1rem;
+            }
+            
+            .interpreters-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            main {
+                padding: 0 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Arcade Games</h1>
-        <div class="games-list">
-            <div class="game-card">
-                <img src="images/snake.png" alt="Snake Game">
-                <h3>Snake Game</h3>
-                <p>Classic snake game - eat food and grow longer!</p>
-                <a href="snake.html" class="game-link">Play Now</a>
+    <header>
+        <div class="header-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="header-content">
+            <h1 class="site-title">Web Code Interpreters</h1>
+            <p class="site-description">Experience multiple programming languages directly in your browser with our modern, interactive development environment.</p>
+        </div>
+    </header>
+    
+    <main>
+        <h2 class="section-title">Explore Languages</h2>
+        
+        <div class="interpreters-grid">
+            <!-- Python Interpreter -->
+            <div class="interpreter-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <h3 class="card-title">Python</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">Run Python code in your browser, perform data analysis, and create visualizations with full library support.</p>
+                    <a href="python-interpreter.html" class="card-link">Launch Python</a>
+                </div>
             </div>
-            <div class="game-card">
-                <img src="images/flappybird.png" alt="Flappy Bird">
-                <h3>Flappy Bird</h3>
-                <p>Guide your bird through the pipes!</p>
-                <a href="flappybird.html" class="game-link">Play Now</a>
+            
+            <!-- JavaScript Interpreter -->
+            <div class="interpreter-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fab fa-js"></i>
+                    </div>
+                    <h3 class="card-title">JavaScript</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">Test JavaScript code instantly with live results and DOM manipulation capabilities.</p>
+                    <a href="javascript-interpreter.html" class="card-link">Launch JavaScript</a>
+                </div>
             </div>
-            <div class="game-card">
-                <img src="images/minesweeper.png" alt="Minesweeper">
-                <h3>Minesweeper</h3>
-                <p>Clear the minefield without hitting any bombs!</p>
-                <a href="minesweeper.html" class="game-link">Play Now</a>
+            
+            <!-- HTML/CSS Interpreter -->
+            <div class="interpreter-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fab fa-html5"></i>
+                    </div>
+                    <h3 class="card-title">HTML/CSS</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">Build responsive layouts with real-time preview and instant visual feedback.</p>
+                    <a href="html-css-interpreter.html" class="card-link">Launch HTML/CSS</a>
+                </div>
+            </div>
+            
+            <!-- Markdown Interpreter -->
+            <div class="interpreter-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fab fa-markdown"></i>
+                    </div>
+                    <h3 class="card-title">Markdown</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">Compose documentation effortlessly with side-by-side editing and preview capabilities.</p>
+                    <a href="markdown-interpreter.html" class="card-link">Launch Markdown</a>
+                </div>
+            </div>
+            
+            <!-- JSON Interpreter -->
+            <div class="interpreter-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="card-title">JSON</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">Validate, format, and analyze your JSON data with our powerful and intuitive tools.</p>
+                    <a href="json-interpreter.html" class="card-link">Launch JSON</a>
+                </div>
             </div>
         </div>
-        <footer>
-            <p>© 2024 Arcade Games. All rights reserved.</p>
-        </footer>
-    </div>
+    </main>
+    
+    <footer>
+        <p class="footer-text">© 2025 Web Code Interpreters | Empowering developers with modern learning tools</p>
+    </footer>
 </body>
 </html>

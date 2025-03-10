@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web HTML/CSS Interpreter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --primary-light: #93C5FD;
+            --accent: #8B5CF6;
+            --background: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --header-height: 80px;
+            --success: #4CAF50;
+            --success-dark: #45a049;
+            --error: #f44336;
+            --error-dark: #d32f2f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--card-bg);
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .header-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            left: 10%;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 40%;
+            right: 20%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #FFFFFF, #E0E7FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .code-editors {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .code-editor {
+            margin-bottom: 1rem;
+        }
+
+        .editor-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .code-textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            font-size: 16px;
+            border: 1px solid var(--text-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            box-sizing: border-box;
+            resize: vertical;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm) inset;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        #run-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        #run-btn:hover {
+            background-color: var(--success-dark);
+        }
+
+        #clear-btn {
+            background-color: var(--error);
+            color: white;
+        }
+
+        #clear-btn:hover {
+            background-color: var(--error-dark);
+        }
+
+        .output-container {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        #output-frame {
+            width: 100%;
+            min-height: 400px;
+            border: 1px solid var(--text-light);
+            border-radius: var(--radius-sm);
+            background-color: var(--card-bg);
+        }
+
+        .error {
+            color: var(--error);
+            font-weight: bold;
+        }
+
+        .success {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .example {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .example pre {
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            background-color: var(--background);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--text-light);
+            overflow-x: auto;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--card-bg);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-text {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Responsive design */
+        @media (min-width: 768px) {
+            .code-editors {
+                flex-direction: row;
+            }
+            
+            .code-editor {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 2.5rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 1.5rem 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 2rem 1rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .container {
+                padding: 0 1rem 1.5rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="header-content">
+            <h1>Web HTML/CSS Interpreter</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="editor-container">
+            <h2 class="section-title">HTML/CSS Code:</h2>
+            <div class="code-editors">
+                <div class="code-editor">
+                    <label class="editor-label" for="html-editor">HTML</label>
+                    <textarea id="html-editor" class="code-textarea" placeholder="Write your HTML code here..."><!DOCTYPE html>
+<html>
+<head>
+    <title>My HTML Page</title>
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>This is a sample HTML page.</p>
+    <button class="btn-primary">Click Me</button>
+</body>
+</html></textarea>
+                </div>
+                <div class="code-editor">
+                    <label class="editor-label" for="css-editor">CSS</label>
+                    <textarea id="css-editor" class="code-textarea" placeholder="Write your CSS code here...">body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    color: #2563EB;
+    text-align: center;
+}
+
+p {
+    color: #4B5563;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    background-color: #3B82F6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+}
+
+.btn-primary:hover {
+    background-color: #2563EB;
+}</textarea>
+                </div>
+            </div>
+            <div class="button-container">
+                <button id="run-btn" class="btn">Run Code</button>
+                <button id="clear-btn" class="btn">Clear Code</button>
+            </div>
+        </div>
+        
+        <div class="output-container">
+            <h2 class="section-title">Output:</h2>
+            <iframe id="output-frame" frameborder="0"></iframe>
+        </div>
+        
+        <div class="example">
+            <h2 class="section-title">Example Codes:</h2>
+            <p><strong>Example 1: Simple Card Layout</strong></p>
+            <pre>
+&lt;!-- HTML -->
+&lt;!DOCTYPE html>
+&lt;html>
+&lt;head>
+    &lt;title>Card Layout&lt;/title>
+&lt;/head>
+&lt;body>
+    &lt;div class="card">
+        &lt;div class="card-header">
+            &lt;h2>Feature Card&lt;/h2>
+        &lt;/div>
+        &lt;div class="card-body">
+            &lt;p>This is a beautifully styled card component with modern design.&lt;/p>
+            &lt;button class="card-btn">Learn More&lt;/button>
+        &lt;/div>
+    &lt;/div>
+&lt;/body>
+&lt;/html>
+
+/* CSS */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 300px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background: linear-gradient(to right, #3B82F6, #8B5CF6);
+    color: white;
+    padding: 20px;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-body p {
+    color: #6B7280;
+    margin-bottom: 20px;
+}
+
+.card-btn {
+    background-color: #3B82F6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.card-btn:hover {
+    background-color: #2563EB;
+}
+</pre>
+
+            <p><strong>Example 2: Responsive Flexbox Layout</strong></p>
+            <pre>
+&lt;!-- HTML -->
+&lt;!DOCTYPE html>
+&lt;html>
+&lt;head>
+    &lt;title>Responsive Layout&lt;/title>
+&lt;/head>
+&lt;body>
+    &lt;div class="container">
+        &lt;div class="item">Item 1&lt;/div>
+        &lt;div class="item">Item 2&lt;/div>
+        &lt;div class="item">Item 3&lt;/div>
+        &lt;div class="item">Item 4&lt;/div>
+    &lt;/div>
+&lt;/body>
+&lt;/html>
+
+/* CSS */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f9fafb;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.item {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1 1 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #3B82F6;
+    transition: transform 0.3s;
+}
+
+.item:hover {
+    transform: scale(1.05);
+    background-color: #3B82F6;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .item {
+        flex: 1 1 100%;
+    }
+}
+</pre>
+        </div>
+    </div>
+
+    <footer>
+        <p class="footer-text">© 2025 Web Code Interpreters | Empowering developers with modern learning tools</p>
+    </footer>
+
+    <script>
+        const htmlEditor = document.getElementById('html-editor');
+        const cssEditor = document.getElementById('css-editor');
+        const outputFrame = document.getElementById('output-frame');
+        const runButton = document.getElementById('run-btn');
+        const clearButton = document.getElementById('clear-btn');
+        
+        // Function to run the HTML/CSS code
+        function runCode() {
+            try {
+                const html = htmlEditor.value;
+                const css = cssEditor.value;
+                
+                // Process HTML content to get the body part
+                let bodyContent = html;
+                
+                // If it contains standard HTML structure, extract just the content part
+                if (html.includes('<body>') && html.includes('</body>')) {
+                    const bodyStartIndex = html.indexOf('<body>') + 6;
+                    const bodyEndIndex = html.lastIndexOf('</body>');
+                    if (bodyStartIndex > 6 && bodyEndIndex > bodyStartIndex) {
+                        bodyContent = html.substring(bodyStartIndex, bodyEndIndex);
+                    }
+                } else if (html.includes('<!DOCTYPE') || html.includes('<html>')) {
+                    // Handle HTML with doctype or html tags but without clear body tags
+                    bodyContent = html
+                        .replace(/<!DOCTYPE[^>]*>/i, '')
+                        .replace(/<html[^>]*>/i, '')
+                        .replace(/<\/html>/i, '')
+                        .replace(/<head[\s\S]*?<\/head>/i, '');
+                }
+                
+                // Create a complete HTML document
+                const fullHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        ${css}
+                    </style>
+                </head>
+                <body>
+                    ${bodyContent}
+                </body>
+                </html>`;
+                
+                // Use srcdoc attribute which is more reliable in web server environments
+                outputFrame.srcdoc = fullHTML;
+            } catch (error) {
+                console.error("Error rendering HTML/CSS:", error);
+                
+                // Display error using srcdoc instead
+                outputFrame.srcdoc = `
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: system-ui; padding: 20px; color: #d32f2f; }
+                        </style>
+                    </head>
+                    <body>
+                        <h3>Error rendering content:</h3>
+                        <pre>${error.message}</pre>
+                    </body>
+                    </html>
+                `;
+            }
+        }
+        
+        // Function to clear the editors
+        function clearAll() {
+            htmlEditor.value = '';
+            cssEditor.value = '';
+            
+            // Clear the iframe using srcdoc
+            outputFrame.srcdoc = '';
+        }
+        
+        // Event listeners
+        runButton.addEventListener('click', runCode);
+        clearButton.addEventListener('click', clearAll);
+        
+        // Run the initial code when the page loads
+        window.addEventListener('load', function() {
+            // Short delay to ensure DOM is fully loaded
+            setTimeout(runCode, 100);
+        });
+    </script>
+</body>
+</html> 
